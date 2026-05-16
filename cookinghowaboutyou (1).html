@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CookingHowAboutYou — Real Food. Real People.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Nunito+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --amber:#F0841E;
+  --amber2:#FFB36B;
+  --amber3:#FFD9AA;
+  --fire-red:#FF4A1A;
+  --text:#2C1A0E;
+  --text2:#7A5040;
+  --text3:#B89278;
+  --glass:rgba(255,255,255,0.48);
+  --glass-s:rgba(255,255,255,0.68);
+  --glass-b:rgba(255,255,255,0.75);
+  --gshadow:0 16px 56px rgba(180,100,30,0.11),0 3px 10px rgba(180,100,30,0.06),inset 0 1.5px 0 rgba(255,255,255,0.92);
+  --rp:9999px;--rc:40px;--rl:28px;
+}
+body{
+  background:linear-gradient(155deg,#FFFCF7 0%,#FFF5E8 35%,#FFE8D0 70%,#FFD8B0 100%);
+  min-height:300vh;
+  font-family:'Nunito Sans',sans-serif;
+  color:var(--text);
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* CURSOR */
+.cur,.cur-r{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%);transition:width .25s,height .25s}
+.cur{width:10px;height:10px;background:var(--amber)}
+.cur-r{width:36px;height:36px;border:1.5px solid rgba(240,132,30,0.55);opacity:.65}
+
+/* CANVAS (fixed so it stays in view always) */
+#scene{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* ALL CONTENT ABOVE CANVAS */
+nav,main,footer{position:relative;z-index:2}
+
+/* ═══ NAV ═══ */
+nav{
+  position:fixed;top:1rem;left:50%;transform:translateX(-50%);
+  width:calc(100% - 3rem);max-width:1180px;
+  padding:1.1rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--glass-s);
+  backdrop-filter:blur(32px) saturate(200%);
+  -webkit-backdrop-filter:blur(32px) saturate(200%);
+  border:1px solid var(--glass-b);
+  border-radius:var(--rp);
+  box-shadow:var(--gshadow);
+  z-index:100;
+}
+.nav-brand{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:600;color:var(--text);text-decoration:none}
+.nav-brand em{font-style:italic;color:var(--amber)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;transition:color .3s}
+.nav-links a:hover{color:var(--amber)}
+.nav-yt{background:var(--amber);color:#fff;padding:.45rem 1.25rem;border-radius:var(--rp);font-size:.74rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;box-shadow:0 4px 18px rgba(240,132,30,.38);transition:background .3s,transform .2s,box-shadow .3s}
+.nav-yt:hover{background:var(--fire-red);transform:translateY(-1px);box-shadow:0 8px 28px rgba(255,74,26,.4)}
+
+/* ═══ HERO ═══ */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem}
+.hero-card{
+  background:var(--glass);
+  backdrop-filter:blur(36px) saturate(180%);
+  -webkit-backdrop-filter:blur(36px) saturate(180%);
+  border:1px solid var(--glass-b);
+  border-radius:var(--rc);
+  box-shadow:var(--gshadow);
+  padding:4rem 4.5rem;max-width:800px;width:100%;
+}
+.eyebrow{font-size:.68rem;letter-spacing:.35em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:1.2rem;opacity:0;transform:translateY(14px);animation:fadeUp .7s ease .2s forwards}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(3rem,7vw,6rem);font-weight:500;line-height:.95;color:var(--text);margin-bottom:.5rem;opacity:0;transform:translateY(30px);animation:fadeUp .9s ease .4s forwards}
+.hero-title em{font-style:italic;color:var(--amber)}
+.hero-title .big{font-weight:700;display:block}
+.hero-sub{font-size:.98rem;color:var(--text2);font-weight:300;max-width:460px;margin:.9rem auto 2rem;line-height:1.8;opacity:0;transform:translateY(14px);animation:fadeUp .7s ease .7s forwards}
+.hero-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;opacity:0;transform:translateY(14px);animation:fadeUp .7s ease .9s forwards}
+.btn-main{background:var(--amber);color:#fff;padding:.82rem 2rem;border-radius:var(--rp);font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;box-shadow:0 6px 22px rgba(240,132,30,.4);transition:background .3s,transform .2s,box-shadow .3s;border:none;cursor:none}
+.btn-main:hover{background:var(--fire-red);transform:translateY(-2px);box-shadow:0 12px 36px rgba(255,74,26,.4)}
+.btn-ghost{background:rgba(255,255,255,.5);color:var(--text);padding:.82rem 2rem;border-radius:var(--rp);font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(255,255,255,.75);transition:background .3s,transform .2s}
+.btn-ghost:hover{background:rgba(255,255,255,.82);transform:translateY(-2px)}
+.scroll-hint{margin-top:2.5rem;font-size:.63rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text3);display:flex;flex-direction:column;align-items:center;gap:.4rem;opacity:0;animation:fadeUp .6s ease 1.3s forwards}
+.sdot{width:6px;height:6px;background:var(--amber);border-radius:50%;animation:bounce 2s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+/* ═══ MARQUEE ═══ */
+.mq-wrap{padding:.85rem 0;overflow:hidden;white-space:nowrap;background:rgba(255,255,255,.42);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.7);box-shadow:0 2px 18px rgba(180,100,30,.06)}
+.mq-inner{display:inline-block;animation:mq 22s linear infinite}
+.mq-inner span{font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);font-weight:700;padding:0 2.2rem}
+.mq-inner span::before{content:'✦  '}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ═══ SECTION BASE ═══ */
+section{padding:6rem 0;z-index:2}
+.inner{max-width:1180px;margin:0 auto;padding:0 2.5rem}
+.sec-label{font-size:.64rem;letter-spacing:.28em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:.6rem;display:flex;align-items:center;gap:.7rem}
+.sec-label::before{content:'';width:1.4rem;height:1.5px;background:var(--amber);border-radius:2px;display:inline-block}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.1rem);font-weight:500;color:var(--text);line-height:1.12;margin-bottom:.5rem}
+.sec-title em{font-style:italic;color:var(--amber)}
+
+/* ═══ ABOUT ═══ */
+.about-card{
+  background:var(--glass);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+  border:1px solid var(--glass-b);border-radius:var(--rc);box-shadow:var(--gshadow);
+  padding:3.5rem;display:grid;grid-template-columns:220px 1fr;gap:4rem;align-items:center;
+}
+.about-orb{
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,rgba(255,200,120,.38),rgba(255,140,50,.12));
+  border:1px solid rgba(255,180,100,.32);
+  display:flex;align-items:center;justify-content:center;font-size:5.5rem;
+  box-shadow:0 8px 40px rgba(240,132,30,.18),inset 0 2px 0 rgba(255,255,255,.6);
+  animation:floatOrb 5s ease-in-out infinite;
+}
+@keyframes floatOrb{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+.about-p{font-size:.93rem;line-height:1.85;color:var(--text2);font-weight:400;margin-bottom:.9rem}
+.about-p strong{color:var(--text);font-weight:700}
+.about-stats{display:flex;gap:2.5rem;margin-top:1.75rem;padding-top:1.75rem;border-top:1px solid rgba(240,132,30,.15)}
+.sn{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:700;color:var(--amber);line-height:1}
+.sl{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-top:.2rem}
+
+/* ═══ RECIPES ═══ */
+.rec-head{display:grid;grid-template-columns:1fr 1fr;align-items:end;margin-bottom:3rem;gap:2rem}
+.rec-desc{font-size:.88rem;color:var(--text2);font-weight:300;line-height:1.75;margin-left:auto;max-width:340px}
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.rc{
+  background:var(--glass);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);
+  border:1px solid var(--glass-b);border-radius:var(--rl);box-shadow:var(--gshadow);
+  overflow:hidden;cursor:none;transition:border-color .3s,box-shadow .3s;transform-style:preserve-3d;
+}
+.rc:hover{border-color:rgba(240,132,30,.52);box-shadow:0 22px 64px rgba(240,132,30,.22),0 4px 16px rgba(0,0,0,.06),inset 0 1.5px 0 rgba(255,255,255,.95)}
+.rv{height:160px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.rv-bg{position:absolute;inset:0;transition:transform .5s ease}
+.rc:hover .rv-bg{transform:scale(1.07)}
+.re{font-size:3.8rem;position:relative;z-index:1;filter:drop-shadow(0 4px 14px rgba(0,0,0,.16));transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.rc:hover .re{transform:scale(1.18) translateY(-5px)}
+.rb{padding:1.3rem 1.3rem .75rem}
+.rtag{display:inline-block;font-size:.57rem;letter-spacing:.17em;text-transform:uppercase;color:var(--amber);font-weight:700;border:1px solid rgba(240,132,30,.32);background:rgba(240,132,30,.07);padding:.18rem .62rem;border-radius:var(--rp);margin-bottom:.6rem}
+.rname{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:500;color:var(--text);line-height:1.2;margin-bottom:.38rem}
+.rdesc{font-size:.78rem;color:var(--text2);line-height:1.65;font-weight:300}
+.rfoot{padding:.85rem 1.3rem;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(240,132,30,.1);margin-top:.55rem}
+.rep{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)}
+.rarr{width:26px;height:26px;border-radius:50%;border:1px solid rgba(240,132,30,.3);display:flex;align-items:center;justify-content:center;color:var(--amber);font-size:.72rem;transition:background .3s,transform .3s,border-color .3s}
+.rc:hover .rarr{background:var(--amber);color:#fff;border-color:var(--amber);transform:rotate(45deg)}
+
+/* ═══ CHEFS ═══ */
+.chefs-head{text-align:center;margin-bottom:3.5rem}
+.chefs-head .sec-label{justify-content:center}
+.chefs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;max-width:940px;margin:0 auto}
+.cw{perspective:900px;cursor:none}
+.ci{position:relative;aspect-ratio:.82;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.23,1,.32,1)}
+.cw:hover .ci{transform:rotateY(180deg)}
+.cf,.cb{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:var(--rc);overflow:hidden;
+  background:var(--glass);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid var(--glass-b);box-shadow:var(--gshadow);
+}
+.cb{transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;background:rgba(255,255,255,.65)}
+.cport{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 55%,rgba(255,190,100,.18),transparent 70%);position:relative;overflow:hidden}
+.cavatar{font-size:5.5rem;filter:drop-shadow(0 6px 20px rgba(0,0,0,.13))}
+.cring{position:absolute;width:155px;height:155px;border-radius:50%;border:1px solid rgba(240,132,30,.12)}
+.cring::after{content:'';position:absolute;inset:-22px;border:1px solid rgba(240,132,30,.06);border-radius:50%}
+.cinfo{padding:1.35rem;border-top:1px solid rgba(240,132,30,.1)}
+.cnum{font-size:.58rem;letter-spacing:.22em;color:var(--amber);font-weight:700;text-transform:uppercase;margin-bottom:.25rem}
+.cname{font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:600;color:var(--text);line-height:1;margin-bottom:.15rem}
+.crole{font-size:.74rem;color:var(--text2);font-weight:300}
+.cbicon{font-size:2.8rem;margin-bottom:.75rem}
+.cbname{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:600;color:var(--amber);margin-bottom:.45rem}
+.cbdesc{font-size:.8rem;color:var(--text2);line-height:1.75;font-weight:300;margin-bottom:1.1rem}
+.ctags{display:flex;gap:.38rem;flex-wrap:wrap;justify-content:center}
+.ctag{font-size:.56rem;letter-spacing:.13em;text-transform:uppercase;border:1px solid rgba(240,132,30,.28);color:var(--amber);padding:.18rem .6rem;border-radius:var(--rp);background:rgba(240,132,30,.07);font-weight:700}
+.fhint{position:absolute;bottom:.8rem;left:50%;transform:translateX(-50%);font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);opacity:.5;white-space:nowrap;z-index:10;pointer-events:none;transition:opacity .3s}
+.cw:hover .fhint{opacity:0}
+
+/* ═══ YOUTUBE ═══ */
+.yt-sec{text-align:center}
+.yt-card{background:var(--glass);backdrop-filter:blur(28px) saturate(200%);-webkit-backdrop-filter:blur(28px) saturate(200%);border:1px solid var(--glass-b);border-radius:var(--rc);box-shadow:var(--gshadow);padding:4rem 3rem;max-width:660px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1.1rem}
+.ytbadge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,0,0,.08);border:1px solid rgba(255,0,0,.2);color:#D92020;padding:.32rem 1rem;border-radius:var(--rp);font-size:.68rem;font-weight:700;letter-spacing:.1em}
+.ythandle{font-size:.83rem;color:var(--amber);font-weight:700;letter-spacing:.03em}
+.ytdesc{font-size:.93rem;color:var(--text2);font-weight:300;line-height:1.75;max-width:410px;text-align:center}
+.btn-yt{display:inline-flex;align-items:center;gap:.65rem;background:#FF0000;color:#fff;padding:.9rem 2.4rem;border-radius:var(--rp);font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;box-shadow:0 6px 28px rgba(255,0,0,.3);transition:background .3s,transform .2s,box-shadow .3s;border:none;cursor:none}
+.btn-yt:hover{background:#CC0000;transform:translateY(-2px);box-shadow:0 12px 40px rgba(255,0,0,.4)}
+
+/* ═══ FOOTER ═══ */
+footer{padding:1.75rem 3rem;background:rgba(255,255,255,.44);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.72);display:flex;align-items:center;justify-content:space-between;box-shadow:0 -4px 24px rgba(180,100,30,.05)}
+.ftlogo{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:600;color:var(--text)}
+.ftlogo em{font-style:italic;color:var(--amber)}
+.ftcopy{font-size:.71rem;color:var(--text3);font-weight:300}
+.ftlinks{display:flex;gap:1.4rem}
+.ftlinks a{color:var(--text2);text-decoration:none;font-size:.74rem;font-weight:600;transition:color .3s}
+.ftlinks a:hover{color:var(--amber)}
+
+/* ═══ REVEAL ═══ */
+.rev{opacity:0;transform:translateY(34px);transition:opacity .8s ease,transform .8s ease}
+.rev.in{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+.d4{transition-delay:.4s}.d5{transition-delay:.5s}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:900px){
+  .about-card{grid-template-columns:1fr}.about-orb{display:none}
+  .rec-grid{grid-template-columns:1fr 1fr}.rec-head{grid-template-columns:1fr}
+  .chefs-grid{grid-template-columns:1fr 1fr}
+  footer{flex-direction:column;gap:1rem;text-align:center}
+}
+@media(max-width:600px){
+  .rec-grid,.chefs-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .hero-card{padding:2.5rem 1.6rem}
+  .about-card{padding:2rem}
+  footer{padding:1.4rem}
+}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-r" id="cur-r"></div>
+
+<canvas id="scene"></canvas>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a href="#" class="nav-brand">Cooking<em>HAY</em></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#recipes">Recipes</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="https://youtube.com/@cookinghowaboutyou17" target="_blank" class="nav-yt">YouTube ↗</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-card rev">
+    <p class="eyebrow">Welcome to the Kitchen</p>
+    <h1 class="hero-title">Cooking,<em> How</em><span class="big">About You?</span></h1>
+    <p class="hero-sub">Real food, made real simple. Three friends in a kitchen making the recipes everyone loves — from comfort classics to showstoppers.</p>
+    <div class="hero-btns">
+      <a href="#recipes" class="btn-main">Explore Recipes</a>
+      <a href="#team" class="btn-ghost">Meet the Chefs</a>
+    </div>
+    <div class="scroll-hint"><span>Scroll to explore</span><div class="sdot"></div></div>
+  </div>
+</section>
+
+<!-- ═══ MARQUEE ═══ -->
+<div class="mq-wrap">
+  <div class="mq-inner">
+    <span>Skillet Deep Dish Pizza</span><span>Fettuccine Alfredo</span><span>Parfait</span>
+    <span>Cheesy Eggs</span><span>Pancakes</span><span>Popcorn</span>
+    <span>Skillet Deep Dish Pizza</span><span>Fettuccine Alfredo</span><span>Parfait</span>
+    <span>Cheesy Eggs</span><span>Pancakes</span><span>Popcorn</span>
+    <span>Skillet Deep Dish Pizza</span><span>Fettuccine Alfredo</span><span>Parfait</span>
+    <span>Cheesy Eggs</span><span>Pancakes</span><span>Popcorn</span>
+  </div>
+</div>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+  <div class="inner">
+    <div class="about-card rev">
+      <div class="about-orb">🍳</div>
+      <div>
+        <p class="sec-label">Our Story</p>
+        <h2 class="sec-title">Born from a <em>love</em> of real cooking</h2>
+        <p class="about-p"><strong>CookingHowAboutYou</strong> is a YouTube cooking channel run by three friends who believe the best meals are the ones you make yourself. No fancy equipment, no culinary school — just good food and genuine fun.</p>
+        <p class="about-p">From crispy skillet pizzas to silky Fettuccine Alfredo, Kal, Lucas, and Mason bring personality and a whole lot of flavor to every single video.</p>
+        <div class="about-stats">
+          <div><div class="sn">6</div><div class="sl">Recipes Made</div></div>
+          <div><div class="sn">3</div><div class="sl">Star Chefs</div></div>
+          <div><div class="sn">∞</div><div class="sl">Good Vibes</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RECIPES ═══ -->
+<section id="recipes">
+  <div class="inner">
+    <div class="rec-head">
+      <div>
+        <p class="sec-label rev">What We've Made</p>
+        <h2 class="sec-title rev">The <em>Recipes</em></h2>
+      </div>
+      <p class="rec-desc rev">Every dish filmed and cooked right in our kitchen. Hover each card to explore.</p>
+    </div>
+    <div class="rec-grid">
+      <div class="rc rev">
+        <div class="rv"><div class="rv-bg" style="background:linear-gradient(135deg,rgba(255,220,175,.55),rgba(255,180,95,.3))"></div><div class="re">🍕</div></div>
+        <div class="rb"><div class="rtag">Comfort Food</div><h3 class="rname">Skillet Deep Dish Pizza</h3><p class="rdesc">A crispy golden crust with all the deep-dish layers — made in a simple cast iron skillet.</p></div>
+        <div class="rfoot"><span class="rep">Episode 01</span><div class="rarr">→</div></div>
+      </div>
+      <div class="rc rev d1">
+        <div class="rv"><div class="rv-bg" style="background:linear-gradient(135deg,rgba(215,215,255,.5),rgba(175,175,240,.28))"></div><div class="re">🍝</div></div>
+        <div class="rb"><div class="rtag">Italian Classic</div><h3 class="rname">Fettuccine Alfredo</h3><p class="rdesc">Silky smooth and rich. The real Alfredo — no cream, just butter, cheese, and perfection.</p></div>
+        <div class="rfoot"><span class="rep">Episode 02</span><div class="rarr">→</div></div>
+      </div>
+      <div class="rc rev d2">
+        <div class="rv"><div class="rv-bg" style="background:linear-gradient(135deg,rgba(215,175,255,.45),rgba(190,145,235,.25))"></div><div class="re">🫐</div></div>
+        <div class="rb"><div class="rtag">Dessert</div><h3 class="rname">Parfait</h3><p class="rdesc">Layers of creamy yogurt, fresh berries, and granola stacked into pure breakfast bliss.</p></div>
+        <div class="rfoot"><span class="rep">Episode 03</span><div class="rarr">→</div></div>
+      </div>
+      <div class="rc rev d3">
+        <div class="rv"><div class="rv-bg" style="background:linear-gradient(135deg,rgba(255,235,175,.55),rgba(255,200,95,.3))"></div><div class="re">🍳</div></div>
+        <div class="rb"><div class="rtag">Breakfast</div><h3 class="rname">Cheesy Eggs</h3><p class="rdesc">Fluffy scrambled eggs loaded with melted cheese — the ultimate comfort breakfast done right.</p></div>
+        <div class="rfoot"><span class="rep">Episode 04</span><div class="rarr">→</div></div>
+      </div>
+      <div class="rc rev d4">
+        <div class="rv"><div class="rv-bg" style="background:linear-gradient(135deg,rgba(255,228,175,.52),rgba(240,192,115,.28))"></div><div class="re">🥞</div></div>
+        <div class="rb"><div class="rtag">Brunch</div><h3 class="rname">Pancakes</h3><p class="rdesc">Tall, fluffy, golden stacks with crispy edges — the kind you dream about on weekends.</p></div>
+        <div class="rfoot"><span class="rep">Episode 05</span><div class="rarr">→</div></div>
+      </div>
+      <div class="rc rev d5">
+        <div class="rv"><div class="rv-bg" style="background:linear-gradient(135deg,rgba(195,232,195,.48),rgba(155,208,155,.26))"></div><div class="re">🍿</div></div>
+        <div class="rb"><div class="rtag">Snack</div><h3 class="rname">Popcorn</h3><p class="rdesc">The perfect movie-night snack — seasoned just right. Simple, satisfying, and addictive.</p></div>
+        <div class="rfoot"><span class="rep">Episode 06</span><div class="rarr">→</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CHEFS ═══ -->
+<section id="team">
+  <div class="inner">
+    <div class="chefs-head">
+      <p class="sec-label rev">The People Behind The Pans</p>
+      <h2 class="sec-title rev">Meet the <em>Chefs</em></h2>
+      <p class="rev" style="font-size:.83rem;color:var(--text2);font-weight:300;margin-top:.4rem">Hover each card to learn more.</p>
+    </div>
+    <div class="chefs-grid">
+
+      <div class="cw rev">
+        <div class="ci">
+          <div class="cf">
+            <div class="cport"><div class="cring"></div><div class="cavatar">👨‍🍳</div></div>
+            <div class="cinfo"><div class="cnum">Chef 01</div><div class="cname">Kal</div><div class="crole">The Bold Experimenter</div></div>
+          </div>
+          <div class="cb">
+            <div class="cbicon">🔥</div>
+            <div class="cbname">Kal</div>
+            <p class="cbdesc">Fearless creativity in every dish. If there's a wild flavor combo to try, Kal's already tried it — and somehow made it work brilliantly.</p>
+            <div class="ctags"><span class="ctag">Bold Flavors</span><span class="ctag">Experimenter</span><span class="ctag">Skillet Master</span></div>
+          </div>
+        </div>
+        <div class="fhint">Hover to flip ↻</div>
+      </div>
+
+      <div class="cw rev d2">
+        <div class="ci">
+          <div class="cf">
+            <div class="cport"><div class="cring"></div><div class="cavatar">🧑‍🍳</div></div>
+            <div class="cinfo"><div class="cnum">Chef 02</div><div class="cname">Lucas</div><div class="crole">The Precision Cook</div></div>
+          </div>
+          <div class="cb">
+            <div class="cbicon">⚖️</div>
+            <div class="cbname">Lucas</div>
+            <p class="cbdesc">All about technique. Every measurement matters, every timing is exact. The guy who makes sure everything comes out perfectly every time.</p>
+            <div class="ctags"><span class="ctag">Technique</span><span class="ctag">Pasta Pro</span><span class="ctag">Detail-Oriented</span></div>
+          </div>
+        </div>
+        <div class="fhint">Hover to flip ↻</div>
+      </div>
+
+      <div class="cw rev d4">
+        <div class="ci">
+          <div class="cf">
+            <div class="cport"><div class="cring"></div><div class="cavatar">👩‍🍳</div></div>
+            <div class="cinfo"><div class="cnum">Chef 03</div><div class="cname">Mason</div><div class="crole">Heart of the Kitchen</div></div>
+          </div>
+          <div class="cb">
+            <div class="cbicon">❤️</div>
+            <div class="cbname">Mason</div>
+            <p class="cbdesc">Keeps the energy alive and recipes relatable. Makes sure every dish feels like home — warm, comforting, and made with genuine love.</p>
+            <div class="ctags"><span class="ctag">Comfort Food</span><span class="ctag">Breakfast King</span><span class="ctag">Fan Favorite</span></div>
+          </div>
+        </div>
+        <div class="fhint">Hover to flip ↻</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ YOUTUBE CTA ═══ -->
+<section class="yt-sec">
+  <div class="inner">
+    <div class="yt-card rev">
+      <div class="ytbadge">▶ Now Live on YouTube</div>
+      <h2 class="sec-title" style="text-align:center">Watch Every <em>Episode</em></h2>
+      <p class="ytdesc">Subscribe and never miss a recipe. New videos drop regularly — bookmark us and cook along!</p>
+      <div class="ythandle">@cookinghowaboutyou17</div>
+      <a href="https://youtube.com/@cookinghowaboutyou17" target="_blank" class="btn-yt">▶ &nbsp; Visit Our Channel</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="ftlogo">Cooking<em>HAY</em></div>
+  <p class="ftcopy">© 2025 CookingHowAboutYou. All rights reserved.</p>
+  <div class="ftlinks">
+    <a href="https://youtube.com/@cookinghowaboutyou17" target="_blank">YouTube</a>
+    <a href="#recipes">Recipes</a>
+    <a href="#team">Team</a>
+  </div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════
+//  CURSOR
+// ══════════════════════════════════════════
+const cur = document.getElementById('cur');
+const curR = document.getElementById('cur-r');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function lc(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(lc)})();
+document.querySelectorAll('a,button,.rc,.cw').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';curR.style.width='52px';curR.style.height='52px';curR.style.opacity='1'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='10px';cur.style.height='10px';curR.style.width='36px';curR.style.height='36px';curR.style.opacity='.65'});
+});
+
+// ══════════════════════════════════════════
+//  SCROLL REVEAL
+// ══════════════════════════════════════════
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.08,rootMargin:'0px 0px -28px 0px'});
+document.querySelectorAll('.rev').forEach(el=>obs.observe(el));
+
+// ══════════════════════════════════════════
+//  RECIPE CARD 3-D TILT
+// ══════════════════════════════════════════
+document.querySelectorAll('.rc').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const dx=(e.clientX-r.left-r.width/2)/(r.width/2);
+    const dy=(e.clientY-r.top-r.height/2)/(r.height/2);
+    card.style.transform=`perspective(700px) rotateY(${dx*7}deg) rotateX(${-dy*5}deg) translateZ(5px)`;
+    card.style.transition='transform .05s ease';
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.transform='';
+    card.style.transition='transform .55s ease,border-color .3s,box-shadow .3s';
+    setTimeout(()=>card.style.transition='',560);
+  });
+});
+
+// ══════════════════════════════════════════
+//  CANVAS — STOVE / FIRE / SKILLET
+// ══════════════════════════════════════════
+const C=document.getElementById('scene');
+const ctx=C.getContext('2d');
+let W,H;
+function resize(){W=C.width=window.innerWidth;H=C.height=window.innerHeight}
+resize();window.addEventListener('resize',resize);
+
+// Burner anchored at 50% x, 75% y of viewport
+const BRX=0.50, BRY=0.75;
+let BX,BY;
+
+// Skillet tracks mouse with lag
+let SX,SY,TX,TY;
+
+document.addEventListener('mousemove',e=>{TX=e.clientX;TY=e.clientY});
+
+// ──────────────────────────────────────────
+//  FIRE PARTICLE
+// ──────────────────────────────────────────
+class Flame{
+  constructor(phase){
+    this.phase=phase||0;
+    this._init();
+    // stagger start
+    this.life=Math.floor(Math.random()*this.maxLife);
+  }
+  _init(){
+    // pick point on the elliptical burner ring
+    const ang=Math.random()*Math.PI*2;
+    const ro=22+Math.random()*18;
+    this.ox= Math.cos(ang)*ro;
+    this.oy= Math.sin(ang)*ro*0.30; // flatten ellipse
+    this.x=this.ox; this.y=this.oy;
+    this.vx=(Math.random()-.5)*1.6;
+    this.vy=-(2.8+Math.random()*3.8);
+    this.life=0;
+    this.maxLife=42+Math.random()*52;
+    this.sz=6+Math.random()*12;
+    this.wobble=(Math.random()-.5)*0.06;
+    this.inner=Math.random()<0.22; // inner hot core
+  }
+  step(bx,by,sx,sy){
+    // lean vector: from burner toward skillet, capped
+    const dx=sx-bx, dy=sy-by;
+    const dist=Math.sqrt(dx*dx+dy*dy)||1;
+    const lean=Math.min(1.0, 70/dist)*0.55;
+    this.vx+=(dx/dist)*lean*0.08 + this.wobble + (Math.random()-.5)*0.20;
+    this.vy-=0.052; // buoyancy
+    this.vx*=0.982;
+    this.x=bx+this.ox+this.vx*(this.life);
+    // Actually track position properly:
+    this.px=(this.px||bx+this.ox);
+    this.py=(this.py||by+this.oy);
+    this.px+=this.vx+(dx/dist)*lean*0.09;
+    this.py+=this.vy;
+    this.vy-=0.012;
+    this.vx+=this.wobble+(Math.random()-.5)*0.22;
+    this.vx*=0.984;
+    this.life++;
+    if(this.life>=this.maxLife){this._init();this.px=bx+this.ox;this.py=by+this.oy}
+  }
+  draw(ctx){
+    const t=this.life/this.maxLife;
+    // bell-curve size
+    const sz=this.sz*Math.pow(Math.sin(t*Math.PI),0.55)*1.35;
+    if(sz<0.5)return;
+    const alpha=Math.pow(Math.sin(t*Math.PI),0.45)*0.92;
+    let r,g,b;
+    if(this.inner){
+      if(t<0.2){r=220;g=230;b=255}
+      else if(t<0.5){r=255;g=248;b=210}
+      else{r=255;g=210;b=120}
+    } else {
+      if(t<0.12){r=255;g=248;b=200}
+      else if(t<0.30){r=255;g=190;b=50}
+      else if(t<0.58){r=255;g=110;b=15}
+      else{r=225;g=45;b=8}
+    }
+    const gd=ctx.createRadialGradient(this.px,this.py,0,this.px,this.py,sz);
+    gd.addColorStop(0,`rgba(${r},${g},${b},${alpha.toFixed(2)})`);
+    gd.addColorStop(0.42,`rgba(${r},${Math.round(g*.65)},${Math.round(b*.2)},${(alpha*.58).toFixed(2)})`);
+    gd.addColorStop(1,`rgba(${r},${Math.round(g*.3)},0,0)`);
+    ctx.beginPath();
+    ctx.arc(this.px,this.py,sz,0,Math.PI*2);
+    ctx.fillStyle=gd;
+    ctx.fill();
+  }
+}
+
+// Ember — tiny sparks that shoot up
+class Ember{
+  constructor(){this._init()}
+  _init(){
+    const ang=Math.random()*Math.PI*2;
+    const ro=15+Math.random()*25;
+    this.px=Math.cos(ang)*ro;
+    this.py=Math.sin(ang)*ro*0.28;
+    this.vx=(Math.random()-.5)*2.5;
+    this.vy=-(3.5+Math.random()*5);
+    this.life=0;this.maxLife=28+Math.random()*30;
+    this.sz=1.2+Math.random()*2;
+  }
+  step(bx,by,sx,sy){
+    const dx=sx-bx,dy=sy-by,dist=Math.sqrt(dx*dx+dy*dy)||1;
+    this.vx+=((dx/dist)*0.06)+(Math.random()-.5)*0.3;
+    this.vy-=0.08;
+    this.vx*=0.97;
+    this.px+=this.vx;this.py+=this.vy;
+    this.life++;
+    if(this.life>=this.maxLife)this._init();
+  }
+  draw(ctx,bx,by){
+    const t=this.life/this.maxLife;
+    const a=(1-t)*0.85;
+    const r=255,g=Math.round(200-t*180),b=0;
+    ctx.beginPath();
+    ctx.arc(bx+this.px,by+this.py,this.sz*(1-t*.5),0,Math.PI*2);
+    ctx.fillStyle=`rgba(${r},${g},${b},${a.toFixed(2)})`;
+    ctx.fill();
+  }
+}
+
+// Pool
+const NFLAMES=110, NEMBERS=22;
+const flames=[]; for(let i=0;i<NFLAMES;i++) flames.push(new Flame());
+const embers=[]; for(let i=0;i<NEMBERS;i++) embers.push(new Ember());
+
+// init particle positions
+function initParticles(bx,by){
+  flames.forEach(f=>{if(!f.px){f.px=bx+f.ox;f.py=by+f.oy}});
+  embers.forEach(e=>{if(!e._ready){e.px+=bx;e.py+=by;e._ready=true}});
+}
+
+// ──────────────────────────────────────────
+//  DRAW: STOVE SURFACE
+// ──────────────────────────────────────────
+function drawStove(bx,by){
+  const sw=W, sh=H-(by-80);
+  const top=by-85;
+
+  // main body gradient – dark metal
+  const sg=ctx.createLinearGradient(0,top,0,H);
+  sg.addColorStop(0,'rgba(52,46,42,0.96)');
+  sg.addColorStop(0.18,'rgba(40,35,31,0.98)');
+  sg.addColorStop(1,'rgba(22,18,15,1)');
+
+  ctx.save();
+  ctx.beginPath();
+  // slight trapezoidal top edge for depth
+  ctx.moveTo(-10,top+12);ctx.lineTo(W+10,top+12);
+  ctx.lineTo(W+10,H);ctx.lineTo(-10,H);ctx.closePath();
+  ctx.fillStyle=sg;ctx.fill();
+
+  // top edge rim highlight
+  ctx.beginPath();
+  ctx.moveTo(0,top+12);ctx.lineTo(W,top+12);
+  ctx.strokeStyle='rgba(255,255,255,0.10)';ctx.lineWidth=1.8;ctx.stroke();
+
+  // subtle surface reflection pool under skillet
+  const refY=by+38;
+  const refG=ctx.createRadialGradient(SX||bx,refY,0,SX||bx,refY,130);
+  refG.addColorStop(0,'rgba(255,160,60,0.07)');
+  refG.addColorStop(1,'rgba(255,100,20,0)');
+  ctx.beginPath();ctx.ellipse(SX||bx,refY,130,22,0,0,Math.PI*2);
+  ctx.fillStyle=refG;ctx.fill();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────
+//  DRAW: BURNER RINGS
+// ──────────────────────────────────────────
+function drawBurnerRings(bx,by){
+  ctx.save();
+
+  // outer ambient glow
+  const og=ctx.createRadialGradient(bx,by,8,bx,by,88);
+  og.addColorStop(0,'rgba(255,120,0,0.22)');
+  og.addColorStop(0.5,'rgba(255,70,0,0.08)');
+  og.addColorStop(1,'rgba(255,40,0,0)');
+  ctx.beginPath();ctx.ellipse(bx,by,88,35,0,0,Math.PI*2);
+  ctx.fillStyle=og;ctx.fill();
+
+  // rings (outer → inner)
+  [[52,21,2.5,'rgba(110,95,85,0.90)'],
+   [34,14,2,'rgba(95,82,74,0.80)'],
+   [16, 7,1.5,'rgba(82,70,62,0.70)']
+  ].forEach(([rx,ry,lw,col])=>{
+    ctx.beginPath();ctx.ellipse(bx,by,rx,ry,0,0,Math.PI*2);
+    ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.stroke();
+  });
+
+  // inner hot blue glow
+  const ig=ctx.createRadialGradient(bx,by,0,bx,by,18);
+  ig.addColorStop(0,'rgba(100,130,255,0.18)');
+  ig.addColorStop(1,'rgba(80,100,220,0)');
+  ctx.beginPath();ctx.ellipse(bx,by,18,7,0,0,Math.PI*2);
+  ctx.fillStyle=ig;ctx.fill();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────
+//  DRAW: GRATE ARMS
+// ──────────────────────────────────────────
+function drawGrate(bx,by){
+  ctx.save();
+  const arms=[[0,-1,60,0.38],[0,1,60,0.38],[-1,0,58,0.28],[1,0,58,0.28]];
+  arms.forEach(([dx,dy,len,yscale])=>{
+    const ex=bx+dx*len, ey=by+dy*len*yscale;
+    const aw=8;
+    ctx.beginPath();
+    ctx.moveTo(bx+dy*aw,by+dx*aw*0.38);
+    ctx.lineTo(bx-dy*aw,by-dx*aw*0.38);
+    ctx.lineTo(ex-dy*aw*.7,ey-dx*aw*.28);
+    ctx.lineTo(ex+dy*aw*.7,ey+dx*aw*.28);
+    ctx.closePath();
+    ctx.fillStyle='rgba(62,54,48,0.96)';ctx.fill();
+    // top edge highlight
+    ctx.beginPath();
+    ctx.moveTo(bx+dy*aw*.5,by+dx*aw*.2);
+    ctx.lineTo(ex+dy*aw*.35,ey+dx*aw*.14);
+    ctx.strokeStyle='rgba(125,112,104,0.55)';ctx.lineWidth=1.3;ctx.stroke();
+  });
+  // center cap
+  ctx.beginPath();ctx.ellipse(bx,by,9,4.5,0,0,Math.PI*2);
+  ctx.fillStyle='rgba(78,68,60,1)';ctx.fill();
+  ctx.strokeStyle='rgba(140,125,115,0.45)';ctx.lineWidth=1;ctx.stroke();
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────
+//  DRAW: SKILLET
+// ──────────────────────────────────────────
+function drawSkillet(sx,sy,bx,by){
+  ctx.save();
+  ctx.translate(sx,sy);
+
+  // distance to fire — for underglow intensity
+  const dx=bx-sx, dy=by-sy;
+  const dist=Math.sqrt(dx*dx+dy*dy)||1;
+  const heatAmt=Math.max(0, Math.min(1, 1-(dist/500)));
+
+  // soft shadow cast down toward stove
+  const shY=Math.max(0,(by-sy)*.28+50);
+  ctx.save();
+  ctx.translate(0,shY);ctx.scale(1,0.16);
+  ctx.beginPath();ctx.ellipse(0,0,105,105,0,0,Math.PI*2);
+  ctx.fillStyle='rgba(0,0,0,0.20)';
+  ctx.filter='blur(22px)';
+  ctx.fill();ctx.filter='none';
+  ctx.restore();
+
+  // FIRE UNDERSIDE GLOW
+  if(heatAmt>0.02){
+    const fg=ctx.createRadialGradient(0,6,4,0,8,105);
+    fg.addColorStop(0,`rgba(255,145,40,${(heatAmt*0.60).toFixed(2)})`);
+    fg.addColorStop(0.45,`rgba(255,85,0,${(heatAmt*0.25).toFixed(2)})`);
+    fg.addColorStop(1,'rgba(255,60,0,0)');
+    ctx.beginPath();ctx.ellipse(0,4,95,38,0,0,Math.PI*2);
+    ctx.fillStyle=fg;ctx.fill();
+  }
+
+  // slight tilt toward fire source
+  const tY=(dx/dist)*0.055;
+
+  // ── PAN OUTER RIM ──
+  ctx.beginPath();ctx.ellipse(0,0,96,38,tY,0,Math.PI*2);
+  const rimG=ctx.createRadialGradient(-22,-12,5,0,0,98);
+  rimG.addColorStop(0,'rgba(95,80,74,1)');
+  rimG.addColorStop(0.55,'rgba(55,46,42,1)');
+  rimG.addColorStop(1,'rgba(30,24,20,1)');
+  ctx.fillStyle=rimG;ctx.fill();
+  ctx.strokeStyle='rgba(140,122,112,0.45)';ctx.lineWidth=2.8;ctx.stroke();
+
+  // ── PAN INNER SURFACE ──
+  ctx.beginPath();ctx.ellipse(0,3,84,32,tY,0,Math.PI*2);
+  const inG=ctx.createRadialGradient(-14,-8,3,0,3,86);
+  inG.addColorStop(0,'rgba(78,65,60,1)');
+  inG.addColorStop(0.5,'rgba(44,36,32,1)');
+  inG.addColorStop(1,'rgba(24,18,15,1)');
+  ctx.fillStyle=inG;ctx.fill();
+
+  // seasoning ring texture
+  ctx.beginPath();ctx.ellipse(0,3,58,23,tY,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,255,255,0.028)';ctx.lineWidth=1;ctx.stroke();
+
+  // rim sheen
+  ctx.beginPath();ctx.ellipse(-26,-15,30,10,-0.28,0,Math.PI*2);
+  ctx.fillStyle='rgba(255,255,255,0.052)';ctx.fill();
+
+  // ── HANDLE ──
+  const hS=88, hE=hS+120, hW=12;
+  // shadow
+  ctx.beginPath();
+  ctx.moveTo(hS,hW+3);ctx.lineTo(hE+5,hW+1);
+  ctx.lineTo(hE+5,hW+7);ctx.lineTo(hS,hW+9);
+  ctx.closePath();ctx.fillStyle='rgba(0,0,0,0.15)';ctx.fill();
+  // body
+  const hG=ctx.createLinearGradient(hS,-hW,hE,hW);
+  hG.addColorStop(0,'rgba(72,60,54,1)');hG.addColorStop(0.3,'rgba(92,78,70,1)');
+  hG.addColorStop(0.65,'rgba(64,52,47,1)');hG.addColorStop(1,'rgba(50,40,36,1)');
+  ctx.beginPath();
+  ctx.moveTo(hS-2,-hW+2);ctx.lineTo(hE,-hW+4);
+  ctx.quadraticCurveTo(hE+12,0,hE,-hW+4+hW*2-4);
+  ctx.lineTo(hS-2,hW-2);ctx.closePath();
+  ctx.fillStyle=hG;ctx.fill();
+  // handle top edge
+  ctx.beginPath();ctx.moveTo(hS,-hW+4);ctx.lineTo(hE,-hW+6);
+  ctx.strokeStyle='rgba(135,118,110,0.48)';ctx.lineWidth=1.2;ctx.stroke();
+  // rivets
+  [hS+14,hS+32].forEach(boltX=>{
+    ctx.beginPath();ctx.arc(boltX,0,4.2,0,Math.PI*2);
+    ctx.fillStyle='rgba(112,98,88,0.95)';ctx.fill();
+    ctx.strokeStyle='rgba(160,145,136,0.38)';ctx.lineWidth=0.8;ctx.stroke();
+    ctx.beginPath();ctx.arc(boltX-1,-1.2,1.4,0,Math.PI*2);
+    ctx.fillStyle='rgba(200,188,180,0.32)';ctx.fill();
+  });
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────
+//  MAIN RENDER LOOP
+// ──────────────────────────────────────────
+let frame=0;
+function loop(){
+  ctx.clearRect(0,0,W,H);
+  frame++;
+
+  BX=W*BRX; BY=H*BRY;
+
+  // Skillet init
+  if(SX===undefined){SX=BX;SY=BY-H*0.19;TX=SX;TY=SY}
+  if(TX===undefined){TX=SX;TY=SY}
+  // smooth lerp toward mouse
+  SX+=(TX-SX)*0.065;
+  SY+=(TY-SY)*0.065;
+
+  initParticles(BX,BY);
+
+  // 1. stove surface
+  drawStove(BX,BY);
+
+  // 2. fire glow layer (drawn wide, additive-ish via transparency)
+  ctx.save();
+  flames.forEach(f=>{f.step(BX,BY,SX,SY);f.draw(ctx)});
+  embers.forEach(e=>{e.step(BX,BY,SX,SY);e.draw(ctx,BX,BY)});
+  ctx.restore();
+
+  // 3. burner rings (on top of fire base)
+  drawBurnerRings(BX,BY);
+
+  // 4. grate arms (fire peeks through the arms)
+  drawGrate(BX,BY);
+
+  // 5. skillet on top of everything
+  drawSkillet(SX,SY,BX,BY);
+
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
